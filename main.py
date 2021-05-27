@@ -7,10 +7,16 @@ from pyglet.window import key
 
 TIME_INCREMENT = 1 / 2
 
-SCALE = 40
+SCALE = 30
+WIDTH = 10
+HEIGHT = 20
+XOFFSET = 8
+YOFFSET = 4
+
+
 WHITE = 255, 255, 255
 
-game_window = pyglet.window.Window(16 * SCALE, 24 * SCALE, caption='Tetris')
+game_window = pyglet.window.Window((2 * XOFFSET + WIDTH) * SCALE, (HEIGHT + 2 * YOFFSET) * SCALE, caption='Tetris')
 gamestate = classes.Tetris()
 
 def update(dt):
@@ -26,7 +32,7 @@ def on_draw():
     for i in range(10):
         for j in range(24):
             if gamestate.board[i][j] is not None:
-                block = shapes.Rectangle((2 + i - 0.05) * SCALE, (2 + j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
+                block = shapes.Rectangle((XOFFSET + i - 0.05) * SCALE, (YOFFSET + j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
                                          color=gamestate.board[i][j], batch=batch)
                 blocks.append(block)
     # Draw the current piece
@@ -34,19 +40,31 @@ def on_draw():
         i = block[0]
         j = block[1]
         if j < 20:
-            square = shapes.Rectangle((2 + i - 0.05) * SCALE, (2 + j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
+            square = shapes.Rectangle((XOFFSET + i - 0.05) * SCALE, (YOFFSET + j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
                                   color=gamestate.current_piece.color, batch=batch)
             blocks.append(square)
-    # Draw the edges of the game boarda
+    # Draw the edges of the game board
     borders = []
-    xlist = [2 * SCALE, 12 * SCALE]
-    ylist = [2 * SCALE, 22 * SCALE]
+    xlist = [XOFFSET * SCALE, (XOFFSET + WIDTH) * SCALE]
+    ylist = [YOFFSET * SCALE, (YOFFSET + HEIGHT) * SCALE]
     for x in xlist:
         line = shapes.Line(x, ylist[0], x, ylist[1], color=WHITE, batch=batch)
         borders.append(line)
     for y in ylist:
         line = shapes.Line(xlist[0], y, xlist[1], y, color=WHITE, batch=batch)
         borders.append(line)
+
+    # Draw a box for the next piece
+    bottom_left = [SCALE*(XOFFSET + WIDTH + 2), SCALE*(HEIGHT)]
+    xlist = [bottom_left[0], bottom_left[0] + 4 * SCALE]
+    ylist = [bottom_left[1], bottom_left[1] + 4 * SCALE]
+    for x in xlist:
+        line = shapes.Line(x, ylist[0], x, ylist[1], color=WHITE, batch=batch)
+        borders.append(line)
+    for y in ylist:
+        line = shapes.Line(xlist[0], y, xlist[1], y, color=WHITE, batch=batch)
+        borders.append(line)
+
 
     batch.draw()
 
