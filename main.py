@@ -72,7 +72,13 @@ def on_draw():
                                       SCALE * 0.9,
                                       color=gamestate.next_piece.color, batch=batch)
         next_piece.append(square)
-
+    # Display the score at the top of the screen
+    score = pyglet.text.Label(f'Score: {gamestate.score}',
+                              font_name='Times New Roman',
+                              font_size=36,
+                              x=game_window.width // 2, y=(YOFFSET + HEIGHT),
+                              anchor_x='center', anchor_y='bottom',
+                              batch=batch)
     batch.draw()
 
 @game_window.event
