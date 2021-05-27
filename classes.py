@@ -41,6 +41,8 @@ class Tetris:
         self.board = [[None] * 24 for i in range(10)]
         self.current_piece = self.new_piece()
         self.next_piece = self.new_piece()
+        self.score = 0
+        self.level = 0
         # print('Current Piece' + str(self.current_piece))
         # print('Next piece' + str(self.next_piece))
 
@@ -117,12 +119,13 @@ class Tetris:
             if counter == 10:
                 full_rows.append(i)
         counter = 0
-        print(full_rows)
+        self.score += self.scoring(len(full_rows))
         for i in full_rows:
             for column in self.board:
                 column.pop(i - counter)
                 column.append(None)
             counter += 1
+        print(self.score)
 
     def new_piece(self):
         piece_type = random.choice(piece_types)
@@ -134,6 +137,18 @@ class Tetris:
         self.current_piece = self.new_piece()
         self.next_piece = self.new_piece()
 
+    def scoring(self, rows_cleared):
+        # TODO: Make scoring count the amount the piece has been dropped
+        if rows_cleared == 1:
+            return 40 * (self.level + 1)
+        if rows_cleared == 2:
+            return 100 * (self.level + 1)
+        if rows_cleared == 3:
+            return 300 * (self.level + 1)
+        if rows_cleared == 4:
+            return 1200 * (self.level + 1)
+        else:
+            return 0
 
 class Piece:
     def __init__(self, type, column, row):
@@ -164,9 +179,3 @@ class Piece:
         self.layout = np.rot90(self.layout, 3, axes=(0, 1))
         self.generate_squares
 
-
-transposed = {}
-for type in piece_layouts:
-    transposed[type] = np.transpose(piece_layouts[type])
-
-print(transposed)

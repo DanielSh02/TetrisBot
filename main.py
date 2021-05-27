@@ -68,8 +68,6 @@ def on_draw():
     for block in gamestate.next_piece.squares:
         i = (block[0] - WIDTH // 2 + 0.05 + 1) * SCALE + bottom_left[0]
         j = (block[1] - HEIGHT + 0.05) * SCALE + bottom_left[1]
-        print(i)
-        print(j)
         square = shapes.Rectangle(i, j, SCALE * 0.9,
                                       SCALE * 0.9,
                                       color=gamestate.next_piece.color, batch=batch)
