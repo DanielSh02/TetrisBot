@@ -66,7 +66,7 @@ def on_draw():
         borders.append(line)
     next_piece = []
     for block in gamestate.next_piece.squares:
-        i = (block[0] - WIDTH // 2 + 0.05 + 1 ) * SCALE + bottom_left[0]
+        i = (block[0] - WIDTH // 2 + 0.05 + 1) * SCALE + bottom_left[0]
         j = (block[1] - HEIGHT + 0.05) * SCALE + bottom_left[1]
         print(i)
         print(j)

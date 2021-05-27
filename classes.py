@@ -3,15 +3,27 @@ import random
 import numpy as np
 
 piece_types = ['J', 'L', 'I', 'T', 'S', 'Z', 'O']
-piece_layouts = dict(
-    J=np.array([[0, 0, 0], [1, 0, 0], [1, 1, 1]]),
-    L=np.array([[0, 0, 0], [0, 0, 1], [1, 1, 1]]),
-    I=np.array([[1, 1, 1, 1]]),
-    T=np.array([[0, 0, 0], [0, 1, 0], [1, 1, 1]]),
-    S=np.array([[0, 0, 0], [1, 1, 0], [0, 1, 1]]),
-    Z=np.array([[0, 0, 0], [0, 1, 1], [1, 1, 0]]),
-    O=np.array([[1, 1], [1, 1]])
-)
+piece_layouts = dict(J=np.array([[0, 1, 1],
+                                 [0, 0, 1],
+                                 [0, 0, 1]]),
+                     L=np.array([[0, 0, 1],
+                                 [0, 0, 1],
+                                 [0, 1, 1]]),
+                     I=np.array([[0, 0, 1, 0],
+                                 [0, 0, 1, 0],
+                                 [0, 0, 1, 0],
+                                 [0, 0, 1, 0]]),
+                     T=np.array([[0, 0, 1],
+                                 [0, 1, 1],
+                                 [0, 0, 1]]),
+                     S=np.array([[0, 1, 0],
+                                 [0, 1, 1],
+                                 [0, 0, 1]]),
+                     Z=np.array([[0, 0, 1],
+                                 [0, 1, 1],
+                                 [0, 1, 0]]),
+                     O=np.array([[1, 1],
+                                 [1, 1]]))
 
 piece_colors = dict(
     J=(0, 0, 255),
@@ -77,7 +89,6 @@ class Tetris:
         self.current_piece.move([0, -distance])
         # print(self.current_piece.squares)
         self.freeze()
-
 
     def freeze(self):
         for square in self.current_piece.squares:
@@ -149,7 +160,13 @@ class Piece:
         self.y += vector[1]
         self.generate_squares()
 
-
     def rotate_clockwise(self):
         self.layout = np.rot90(self.layout, 3, axes=(0, 1))
         self.generate_squares
+
+
+transposed = {}
+for type in piece_layouts:
+    transposed[type] = np.transpose(piece_layouts[type])
+
+print(transposed)
