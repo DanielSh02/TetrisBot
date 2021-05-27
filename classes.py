@@ -43,13 +43,13 @@ class Tetris:
         self.next_piece = self.new_piece()
         self.score = 0
         self.level = 0
+        self.frames = 0
         # print('Current Piece' + str(self.current_piece))
         # print('Next piece' + str(self.next_piece))
 
     def down(self):
-        test_piece = deepcopy(self.current_piece)
-        test_piece.move([0, -1])
-        if self.collides(test_piece):
+        if self.collides(self.current_piece, [0, -1]):
+            print('Freeze!')
             self.freeze()
         else:
             self.current_piece.move([0, -1])
@@ -62,34 +62,29 @@ class Tetris:
 
     def rotate_clockwise(self):
         test_piece = deepcopy(self.current_piece)
-        test_piece.layout = np.rot90(test_piece.layout, 3, axes=(0, 1))
-        test_piece.generate_squares()
+        test_piece.rotate_clockwise()
         if not self.collides(test_piece):
             self.current_piece.rotate_clockwise()
         else:
-            test_piece.move([1, 0])
-            if not self.collides(test_piece):
-                self.current_piece.rotate_clockwise()
-                self.current_piece.move([1, 0])
-            else:
-                test_piece.move([-2, 0])
-                if not self.collides(test_piece):
+            test_moves = [[1, 0], [-1, 0], [0, 1], [1, 1], [-1, -1], [1, -1], [-1, 1]]
+            for move in test_moves:
+                if not self.collides(test_piece, move):
+                    print('valid')
+                    self.current_piece.move(move)
                     self.current_piece.rotate_clockwise()
-                    self.current_piece.move([-1, 0])
+                    break
+        print('rotation end')
+
 
     def drop(self):
         test_piece = deepcopy(self.current_piece)
         distance = 0
         for i in range(24):
-            if self.collides(test_piece):
-                distance = i - 1
-                # print('collided!')
+            if self.collides(test_piece, [0, -1]):
+                distance = i
                 break
             test_piece.move([0, -1])
-            # print(test_piece.squares)
-        # print(distance)
         self.current_piece.move([0, -distance])
-        # print(self.current_piece.squares)
         self.freeze()
 
     def freeze(self):
@@ -98,11 +93,11 @@ class Tetris:
         self.current_piece = self.next_piece
         self.next_piece = self.new_piece()
         self.clear_rows()
-        # print(self.board)
 
-    def collides(self, piece):
-        for coord in piece.squares:
-            # print(coord)
+    def collides(self, piece, move=[0, 0]):
+        test_piece = deepcopy(piece)
+        test_piece.move(move)
+        for coord in test_piece.squares:
             if coord[1] < 0 or coord[0] < 0 or coord[0] >= 10:
                 return True
             if self.board[coord[0]][coord[1]] is not None:
@@ -177,5 +172,4 @@ class Piece:
 
     def rotate_clockwise(self):
         self.layout = np.rot90(self.layout, 3, axes=(0, 1))
-        self.generate_squares
-
+        self.generate_squares()
