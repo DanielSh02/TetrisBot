@@ -8,7 +8,7 @@ TIME_INCREMENT = 1 / 2
 SCALE = 40
 WHITE = 255, 255, 255
 
-game_window = pyglet.window.Window(10 * SCALE, 24 * SCALE, caption='Tetris')
+game_window = pyglet.window.Window(16 * SCALE, 24 * SCALE, caption='Tetris')
 gamestate = classes.Tetris()
 
 def update(dt):
@@ -31,9 +31,10 @@ def on_draw():
     for block in gamestate.current_piece.squares:
         i = block[0]
         j = block[1]
-        square = shapes.Rectangle((i - 0.05) * SCALE, (j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
+        if j < 20:
+            square = shapes.Rectangle((i - 0.05) * SCALE, (j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
                                   color=gamestate.current_piece.color, batch=batch)
-        blocks.append(square)
+            blocks.append(square)
 
     batch.draw()
 
