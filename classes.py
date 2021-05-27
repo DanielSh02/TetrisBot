@@ -110,10 +110,11 @@ class Tetris:
             for column in self.board:
                 column.pop(i - counter)
                 column.append(None)
+            counter += 1
 
     def new_piece(self):
         piece_type = random.choice(piece_types)
-        piece = Piece(piece_type, 4, 20)
+        piece = Piece('I', 4, 20)
         return piece
 
 
