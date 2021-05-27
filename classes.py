@@ -55,12 +55,11 @@ class Tetris:
             self.current_piece.move([0, -1])
 
     def side(self, direction):
-        test_piece = deepcopy(self.current_piece)
-        test_piece.move(direction)
-        if not self.collides(test_piece):
+        if not self.collides(self.current_piece, direction):
             self.current_piece.move(direction)
 
     def rotate_clockwise(self):
+        print('rotated')
         test_piece = deepcopy(self.current_piece)
         test_piece.rotate_clockwise()
         if not self.collides(test_piece):
