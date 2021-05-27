@@ -72,16 +72,16 @@ class Tetris:
                 # print('collided!')
                 break
             test_piece.move([0, -1])
-            print(test_piece.squares)
+            # print(test_piece.squares)
         # print(distance)
         self.current_piece.move([0, -distance])
-        print(self.current_piece.squares)
+        # print(self.current_piece.squares)
         self.freeze()
+
 
     def freeze(self):
         for square in self.current_piece.squares:
             self.board[square[0]][square[1]] = self.current_piece.color
-            # TODO: Make board[i][j] show the color of the square
         self.current_piece = self.next_piece
         self.next_piece = self.new_piece()
         self.clear_rows()
@@ -104,9 +104,10 @@ class Tetris:
                 if self.board[j][i] is not None:
                     counter += 1
             if counter == 10:
-                full_rows.append(j)
+                full_rows.append(i)
         counter = 0
-        for i in range(len(full_rows)):
+        print(full_rows)
+        for i in full_rows:
             for column in self.board:
                 column.pop(i - counter)
                 column.append(None)
@@ -114,7 +115,7 @@ class Tetris:
 
     def new_piece(self):
         piece_type = random.choice(piece_types)
-        piece = Piece('I', 4, 20)
+        piece = Piece(piece_type, 4, 20)
         return piece
 
 
