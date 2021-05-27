@@ -118,6 +118,11 @@ class Tetris:
         piece = Piece(piece_type, 4, 20)
         return piece
 
+    def restart(self):
+        self.board = [[None] * 24 for i in range(10)]
+        self.current_piece = self.new_piece()
+        self.next_piece = self.new_piece()
+
 
 class Piece:
     def __init__(self, type, column, row):

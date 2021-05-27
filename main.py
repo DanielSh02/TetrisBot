@@ -32,7 +32,7 @@ def on_draw():
     for i in range(10):
         for j in range(24):
             if gamestate.board[i][j] is not None:
-                block = shapes.Rectangle((XOFFSET + i - 0.05) * SCALE, (YOFFSET + j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
+                block = shapes.Rectangle((XOFFSET + i + 0.05) * SCALE, (YOFFSET + j + 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
                                          color=gamestate.board[i][j], batch=batch)
                 blocks.append(block)
     # Draw the current piece
@@ -40,7 +40,7 @@ def on_draw():
         i = block[0]
         j = block[1]
         if j < 20:
-            square = shapes.Rectangle((XOFFSET + i - 0.05) * SCALE, (YOFFSET + j - 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
+            square = shapes.Rectangle((XOFFSET + i + 0.05) * SCALE, (YOFFSET + j + 0.05) * SCALE, SCALE * 0.9, SCALE * 0.9,
                                   color=gamestate.current_piece.color, batch=batch)
             blocks.append(square)
     # Draw the edges of the game board
@@ -64,7 +64,16 @@ def on_draw():
     for y in ylist:
         line = shapes.Line(xlist[0], y, xlist[1], y, color=WHITE, batch=batch)
         borders.append(line)
-
+    next_piece = []
+    for block in gamestate.next_piece.squares:
+        i = (block[0] - WIDTH // 2 + 0.05 + 1 ) * SCALE + bottom_left[0]
+        j = (block[1] - HEIGHT + 0.05) * SCALE + bottom_left[1]
+        print(i)
+        print(j)
+        square = shapes.Rectangle(i, j, SCALE * 0.9,
+                                      SCALE * 0.9,
+                                      color=gamestate.next_piece.color, batch=batch)
+        next_piece.append(square)
 
     batch.draw()
 
@@ -80,6 +89,8 @@ def on_key_press(symbol, modifiers):
         gamestate.side([1, 0])
     if symbol in [key.W, key.UP]:
         gamestate.rotate_clockwise()
+    if symbol == key.Z:
+        gamestate.restart()
 
 if __name__ == "__main__":
     pyglet.clock.schedule_interval(update, TIME_INCREMENT)
