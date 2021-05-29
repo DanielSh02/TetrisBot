@@ -1,6 +1,7 @@
 from copy import deepcopy
 import random
 import numpy as np
+from random import shuffle
 
 piece_types = ['J', 'L', 'I', 'T', 'S', 'Z', 'O']
 piece_layouts = dict(J=np.array([[0, 1, 1],
@@ -36,14 +37,17 @@ piece_colors = dict(
 )
 
 
+
 class Tetris:
     def __init__(self):
         self.board = [[None] * 24 for i in range(10)]
-        self.current_piece = self.new_piece()
-        self.next_piece = self.new_piece()
         self.score = 0
         self.level = 0
         self.frames = 0
+        self.bag = None
+        self.bag_index = 0
+        self.current_piece = self.new_piece()
+        self.next_piece = self.new_piece()
         # print('Current Piece' + str(self.current_piece))
         # print('Next piece' + str(self.next_piece))
 
@@ -122,9 +126,17 @@ class Tetris:
         print(self.score)
 
     def new_piece(self):
-        piece_type = random.choice(piece_types)
-        piece = Piece(piece_type, 4, 20)
-        return piece
+        if self.bag_index == 0:
+            x = [Piece(type) for type in piece_types]
+            shuffle(x)
+            self.bag = iter(x) # reset the bag
+        if self.bag_index == 6:
+            self.bag_index = 0
+        else:
+            self.bag_index+=1
+        return next(self.bag)
+        
+        
 
     def restart(self):
         self.board = [[None] * 24 for i in range(10)]
@@ -145,7 +157,7 @@ class Tetris:
             return 0
 
 class Piece:
-    def __init__(self, type, column, row):
+    def __init__(self, type, column=4, row=20):
         self.x = column
         self.y = row
         self.type = type
