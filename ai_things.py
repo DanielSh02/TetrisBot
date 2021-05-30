@@ -37,8 +37,9 @@ class Competitor:
         """
         How much does the move score based off the competitors weights?
         """
-        score = 0
         test_board = deepcopy(self.gamestate)
+        test_board.make_move(move)
+        return self.weights[0] * test_board.holes() + self.weights[1] * test_board.bumpiness() + self.weights[2] * test_board.height_diff + self.weights[3] * test_board.cleared
 
     def optimal_move(self):
         """
@@ -56,7 +57,11 @@ class Competitor:
                         best_move = move
         return best_move
 
-    
+    def mutate(self):
+        for weight in self.weights:
+            if random.getrandbits(2):
+                weight = random.uniform(0,1)
+
 
     def __str__(self):
         return f'Weights - Holes: {self.weights[0]}, Bumpiness: {self.weights[1]}, Height difference: {self.weights[2]}, Line clearing: {self.weights[3]}'
@@ -88,14 +93,19 @@ class Generation():
     def breed(self):
         #natural selection (Keep top 50%)
         viable_parents = sorted(self.competitors, key = lambda x: x.gamestate.score, reverse = True)[:len(self.competitors)//2]
-        for i in range(100):
+        for i in range(85):
             self.children.append(Competitor(random.choice(viable_parents), random.choice(viable_parents)))
+        #mutate some of the children
+        for i in range(15):
+            child = Competitor(random.choice(viable_parents), random.choice(viable_parents))
+            child.mutate()
+            self.children.append(child)
 
 
-#Bumpiness of the board (more bumpy probably worse?? might depend on the piece) negative weight
+#Bumpiness of the board (more bumpy probably worse?? might depend on the piece)
 
-#Number of holes created (more is worse) negative weight, a hole could be an open hole would still be bad, deepness of hole
+#Number of holes created (more is worse) a hole could be an open hole would still be bad, deepness of hole
 
-#Difference in height (greater is worse) negative weight (might be similar to height)
+#Difference in height (greater is worse) (might be similar to height)
 
 #Split path, next piece vs current piece
