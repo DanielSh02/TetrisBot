@@ -156,6 +156,10 @@ class Tetris:
         else:
             return 0
 
+    #TODO: make_move, takes in tuple of actions and applies them
+    def make_move(move):
+        pass
+
 class Piece:
     def __init__(self, type, column=4, row=20):
         self.x = column
