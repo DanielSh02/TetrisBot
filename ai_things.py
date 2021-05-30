@@ -74,7 +74,7 @@ class Generation():
         # If there is a parent generation inherit the children
         if parent_gen:
             self.competitors = parent_gen.children
-            self.gen_number = parent_gen+1
+            self.gen_number = parent_gen.gen_number+1
         #First generation completely random 100 competitors
         else:
             self.competitors = [Competitor() for i in range(100)]
