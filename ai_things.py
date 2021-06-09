@@ -36,6 +36,7 @@ class Competitor:
                 best_move = self.optimal_move()
                 print(f'Turn: {move}, {best_move}')
             self.gamestate.make_move(best_move)
+        print(f'Score: {self.gamestate.score}')
 
     def calc_score(self, move):
         """
@@ -53,10 +54,10 @@ class Competitor:
         """
         Returns move of form (rotation, side) optimised based off weights (calling calc_score)
         """
-        best_score = -1
+        best_score = float('-inf')
         best_move = None
         for rotation in range(4):
-            for horizontal in range(-5,6):  # TODO: figure out horizontal range
+            for horizontal in range(-5,5):  # TODO: figure out horizontal range
                 move = (rotation, horizontal)
                 test_score = self.calc_score(move)
                 if test_score > best_score:
@@ -125,3 +126,4 @@ class Generation:
 # Difference in height (greater is worse) (might be similar to height)
 
 # Split path, next piece vs current piece
+print(list(range(-5,5)))
