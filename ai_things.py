@@ -40,7 +40,7 @@ class Competitor:
                 print(f'Turn: {move}, {best_move}')
             self.gamestate.make_move(best_move)
             self.turns_alive += 1
-        print(f'Score: {self.superscore()}')
+        print(f'Score: {self.overall_score()}')
 
     def overall_score(self):
         super_score = 0
