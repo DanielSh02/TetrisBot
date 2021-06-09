@@ -51,12 +51,15 @@ class Tetris:
         self.bag_index = 0
         self.current_piece = self.new_piece()
         self.next_piece = self.new_piece()
+        self.holes = None
+        self.clear_q = []
+        self.clear_score
+        self.height_diff = None
         # print('Current Piece' + str(self.current_piece))
         # print('Next piece' + str(self.next_piece))
 
     def down(self):
         if self.collides(self.current_piece, [0, -1]):
-            print('Freeze!')
             self.freeze()
         else:
             self.current_piece.move([0, -1])
@@ -66,7 +69,6 @@ class Tetris:
             self.current_piece.move(direction)
 
     def rotate_clockwise(self):
-        print('rotated')
         test_piece = deepcopy(self.current_piece)
         test_piece.rotate_clockwise()
         if not self.collides(test_piece):
@@ -75,11 +77,9 @@ class Tetris:
             test_moves = [[1, 0], [-1, 0], [0, 1], [1, 1], [-1, -1], [1, -1], [-1, 1]]
             for move in test_moves:
                 if not self.collides(test_piece, move):
-                    print('valid')
                     self.current_piece.move(move)
                     self.current_piece.rotate_clockwise()
                     break
-        print('rotation end')
 
 
     def drop(self):
@@ -91,6 +91,7 @@ class Tetris:
                 break
             test_piece.move([0, -1])
         self.current_piece.move([0, -distance])
+        self.update_clear_q()
         self.freeze()
 
     def freeze(self):
@@ -98,7 +99,7 @@ class Tetris:
             self.board[square[0]][square[1]] = self.current_piece.color
         self.current_piece = self.next_piece
         self.next_piece = self.new_piece()
-        print(self.height_diff())
+        self.super_update()
         self.clear_rows()
 
     def collides(self, piece, move=[0, 0]):
@@ -111,25 +112,18 @@ class Tetris:
                 return True
         return False
 
+        
+
     def clear_rows(self):
-        full_rows = []
-        for i in range(24):
-            counter = 0
-            for j in range(10):
-                if self.board[j][i] is not None:
-                    counter += 1
-            if counter == 10:
-                full_rows.append(i)
         counter = 0
-        self.score += self.scoring(len(full_rows))
-        for i in full_rows:
+        for i in self.clear_q:
             for column in self.board:
                 column.pop(i - counter)
                 column.append(None)
             counter += 1
-        print(self.score)
+    
 
-    def new_piece(self): #apparently theres something u have k follow my cursor thing
+    def new_piece(self):
         if self.bag_index == 0:
             x = [Piece(type) for type in piece_types]
             shuffle(x)
@@ -145,7 +139,7 @@ class Tetris:
         self.current_piece = self.new_piece()
         self.next_piece = self.new_piece()
 
-    def scoring(self, rows_cleared):
+    def clear_scoring(self, rows_cleared):
         # TODO: Make scoring count the amount the piece has been dropped
         if rows_cleared == 1:
             return 40 * (self.level + 1)
@@ -169,11 +163,22 @@ class Tetris:
                 self.side(self, [direction, 0])
         self.drop()
 
-    def holes(self):
-        return sum(len(list([1 for i in range(10) if self.board[i][j+1] and not self.board[i][j]])) for j in range(20))
+    def super_update(self):
+        full_rows = []
+        for i in range(24):
+            counter = 0
+            for j in range(10):
+                if self.board[j][i] is not None:
+                    counter += 1
+            if counter == 10:
+                full_rows.append(i)
+        self.clear_q = full_rows
+        self.clear_score = self.clear_scoring(len(self.clear_q))
+        self.score += self.clear_score
+        self.holes = sum(len(list([1 for i in range(10) if self.board[i][j+1] and not self.board[i][j]])) for j in range(20))
+        self.height_diff = stdev([24-better_index(list(map(lambda x:bool(x),reversed(col)))) for col in self.board])
 
-    def height_diff(self):
-        return stdev([24-better_index(list(map(lambda x:bool(x),reversed(col)))) for col in self.board])
+
 
 def better_index(lst):
     try:

@@ -3,7 +3,8 @@ from classes import Tetris
 from copy import deepcopy
 
 num_moves = 100
-num_weights = 4
+num_weights = 3
+
 
 class bot:
     def __init__(self, weights):
@@ -13,18 +14,18 @@ class bot:
 class Competitor:
     def __init__(self, parent1=None, parent2=None):
         self.weights = []
-        #First generation
+        # First generation
         if not parent1 and not parent2:
             self.weights = [random.uniform(0, 1) for i in range(num_weights)]
-        #Proceeding generations inherit their parents characteristics randomly
+        # Proceeding generations inherit their parents characteristics randomly
         else:
-            #Random cross breed
+            # Random cross breed
             for i in range(num_weights):
                 if random.getrandbits(1):
                     self.weights[i] = parent1.weights[i]
                 else:
                     self.weights[i] = parent2.weights[i]
-        self.gamestate = Tetris() # A new Tetris object
+        self.gamestate = Tetris()  # A new Tetris object
 
     def play(self):
         """
@@ -39,7 +40,11 @@ class Competitor:
         """
         test_board = deepcopy(self.gamestate)
         test_board.make_move(move)
-        return self.weights[0] * test_board.holes() + self.weights[1] * test_board.bumpiness() + self.weights[2] * test_board.height_diff + self.weights[3] * test_board.cleared
+        score = 0
+        score += self.weights[0] * test_board.holes
+        score += self.weights[2] * test_board.height_diff
+        score += self.weights[3] * test_board.clear_score
+        return score
 
     def optimal_move(self):
         """
@@ -48,29 +53,29 @@ class Competitor:
         best_score = -1
         best_move = None
         for rotation in range(4):
-            for horizontal in range(100): # TODO: figure out horizontal range
-                move = (switch, rotation, horizontal)
+            for horizontal in range(100):  # TODO: figure out horizontal range
+                move = (rotation, horizontal)
                 test_score = self.calc_score(move)
-                if test_score>best_score:
+                if test_score > best_score:
                     best_score = test_score
                     best_move = move
         return best_move
 
     def mutate(self):
         for weight in self.weights:
-            if random.getrandbits(2):
-                weight = random.uniform(0,1)
-
+            if not random.getrandbits(2):
+                weight = random.uniform(0, 1)
 
     def __str__(self):
-        return f'Weights - Holes: {self.weights[0]}, Bumpiness: {self.weights[1]}, Height difference: {self.weights[2]}, Line clearing: {self.weights[3]}'
+        return f"Weights - Holes: {self.weights[0]}, Height difference: {self.weights[1]}, Line clearing: {self.weights[2]}"
 
 
-class Generation():
+class Generation:
     """
     Zeroeth generation begins with randomly weighted competitors
     When a new generation is made it takes in a parent generation's children and gen number
     """
+
     def __init__(self, parent_gen=None):
         self.competitors = []
         self.children = []
@@ -78,8 +83,8 @@ class Generation():
         # If there is a parent generation inherit the children
         if parent_gen:
             self.competitors = parent_gen.children
-            self.gen_number = parent_gen.gen_number+1
-        #First generation completely random 100 competitors
+            self.gen_number = parent_gen.gen_number + 1
+        # First generation completely random 100 competitors
         else:
             self.competitors = [Competitor() for i in range(100)]
             self.gen_number = 0
@@ -90,21 +95,27 @@ class Generation():
         self.breed()
 
     def breed(self):
-        #natural selection (Keep top 50%)
-        viable_parents = sorted(self.competitors, key = lambda x: x.gamestate.score, reverse = True)[:len(self.competitors)//2]
+        # natural selection (Keep top 50%)
+        viable_parents = sorted(
+            self.competitors, key=lambda x: x.gamestate.score, reverse=True
+        )[: len(self.competitors) // 2]
         for i in range(85):
-            self.children.append(Competitor(random.choice(viable_parents), random.choice(viable_parents)))
-        #mutate some of the children
+            self.children.append(
+                Competitor(random.choice(viable_parents), random.choice(viable_parents))
+            )
+        # mutate some of the children
         for i in range(15):
-            child = Competitor(random.choice(viable_parents), random.choice(viable_parents))
+            child = Competitor(
+                random.choice(viable_parents), random.choice(viable_parents)
+            )
             child.mutate()
             self.children.append(child)
 
 
-#Bumpiness of the board (more bumpy probably worse?? might depend on the piece)
+# Bumpiness of the board (more bumpy probably worse?? might depend on the piece)
 
-#Number of holes created (more is worse) a hole could be an open hole would still be bad, deepness of hole
+# Number of holes created (more is worse) a hole could be an open hole would still be bad, deepness of hole
 
-#Difference in height (greater is worse) (might be similar to height)
+# Difference in height (greater is worse) (might be similar to height)
 
-#Split path, next piece vs current piece
+# Split path, next piece vs current piece
