@@ -43,7 +43,7 @@ class Competitor:
 
     def optimal_move(self):
         """
-        Returns move of form (switch, rotation, side) optimised based off weights (calling calc_score)
+        Returns move of form (rotation, side) optimised based off weights (calling calc_score)
         """
         best_score = -1
         best_move = None

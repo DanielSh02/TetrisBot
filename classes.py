@@ -2,6 +2,8 @@ from copy import deepcopy
 import random
 import numpy as np
 from random import shuffle
+from statistics import stdev
+
 
 piece_types = ['J', 'L', 'I', 'T', 'S', 'Z', 'O']
 piece_layouts = dict(J=np.array([[0, 1, 1],
@@ -126,7 +128,7 @@ class Tetris:
             counter += 1
         print(self.score)
 
-    def new_piece(self):
+    def new_piece(self): #apparently theres something u have k follow my cursor thing
         if self.bag_index == 0:
             x = [Piece(type) for type in piece_types]
             shuffle(x)
@@ -156,8 +158,32 @@ class Tetris:
             return 0
 
     #TODO: make_move, takes in tuple of actions and applies them
-    def make_move(move):
-        pass
+    def make_move(self, move):
+        for i in range(move[0]):
+            self.rotate_clockwise()
+        if move[1]:
+            direction = np.sign(move[1])
+            moves = abs(move[1])
+            for i in range(moves):
+                self.side(self, [direction, 0])
+        self.drop()
+
+    def holes(self):
+        return sum(len(list([1 for i in range(10) if self.board[i][j+1] and not self.board[i][j]])) for j in range(20))
+
+    def height_diff(self):
+        heights = []
+        # avg = sum(heights)/len(heights) dividing kinda do?esnt matter right
+        # io feel lik etheres prob just a std ok sure
+        # u want the average don't u for standard dev
+        # probably, but whats the differecne from what we can do
+        for col in self.board:
+            height = 0
+            for i in range(len(heights)):
+                if col[i] is not None:
+                    height = 0
+            heights.append(height)
+
 
 class Piece:
     def __init__(self, type, column=4, row=20):
