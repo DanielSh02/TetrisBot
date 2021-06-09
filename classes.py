@@ -40,6 +40,7 @@ piece_colors = dict(
 
 
 
+
 class Tetris:
     def __init__(self):
         self.board = [[None] * 24 for i in range(10)]
@@ -172,8 +173,13 @@ class Tetris:
         return sum(len(list([1 for i in range(10) if self.board[i][j+1] and not self.board[i][j]])) for j in range(20))
 
     def height_diff(self):
-        return stdev(len(col)-[1 for point in reversed(col) if point].index(1) for col in self.board)
+        return stdev([24-better_index(list(map(lambda x:bool(x),reversed(col)))) for col in self.board])
 
+def better_index(lst):
+    try:
+        return lst.index(True)
+    except:
+        return 24
 
 class Piece:
     def __init__(self, type, column=4, row=20):
