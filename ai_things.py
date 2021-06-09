@@ -103,7 +103,10 @@ class Generation:
         # First generation completely random 100 competitors
         else:
             names = iter(range(100))
-            self.competitors = [Competitor(f'0.{next(names)}') for i in range(100)]
+            for i in range(100):
+                name = next(names)
+                zeros = (3-len(str(name)))*'0'
+                self.competitors.append(Competitor(f'0.{zeros}{name}'))
             self.gen_number = 0
         print(f'Generation {self.gen_number} created!\n')
 
@@ -122,12 +125,16 @@ class Generation:
             self.competitors, key=lambda x: x.overall_superscore(), reverse=True
         )[: len(self.competitors) // 2]
         for i in range(85):
+            name = next(names)
+            zeros = (3-len(str(name)))*'0'
             self.children.append(
-                Competitor(f'{self.gen_number+1}.{next(names)}',random.choice(viable_parents), random.choice(viable_parents))
+                Competitor(f'{self.gen_number+1}.{zeros}{name}',random.choice(viable_parents), random.choice(viable_parents))
             )
         # mutate some of the children
         for i in range(15):
-            child = Competitor(f'{self.gen_number+1}.{next(names)}',
+            name = next(names)
+            zeros = (3-len(str(name)))*'0'
+            child = Competitor(f'{self.gen_number+1}.{zeros}{name}',
                 random.choice(viable_parents), random.choice(viable_parents)
             )
             child.mutate()
