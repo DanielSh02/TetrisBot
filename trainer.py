@@ -18,4 +18,4 @@ def generate_bot(desired_score):
 
 
 for i in range(10):
-    generate_bot(100000)
+    generate_bot(10000)

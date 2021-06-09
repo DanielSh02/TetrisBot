@@ -12,7 +12,7 @@ class bot:
 
 
 class Competitor:
-    def __init__(self, parent1=None, parent2=None):
+    def __init__(self, name, parent1=None, parent2=None):
         self.weights = []
         self.turns_alive = 0
         # First generation
@@ -100,7 +100,8 @@ class Generation:
             self.gen_number = parent_gen.gen_number + 1
         # First generation completely random 100 competitors
         else:
-            self.competitors = [Competitor() for i in range(100)]
+            names = iter(range(100))
+            self.competitors = [Competitor(f'0.{next(names)}') for i in range(100)]
             self.gen_number = 0
         print(f'Generation {self.gen_number} created!')
 
@@ -113,17 +114,18 @@ class Generation:
 
     def breed(self):
         print('Breeding...')
+        names = iter(range(100))
         # natural selection (Keep top 50%)
         viable_parents = sorted(
             self.competitors, key=lambda x: x.overall_superscore(), reverse=True
         )[: len(self.competitors) // 2]
         for i in range(85):
             self.children.append(
-                Competitor(random.choice(viable_parents), random.choice(viable_parents))
+                Competitor(f'{self.gen_number}.next(name)',random.choice(viable_parents), random.choice(viable_parents))
             )
         # mutate some of the children
         for i in range(15):
-            child = Competitor(
+            child = Competitor(f'{self.gen_number}.next(name)',
                 random.choice(viable_parents), random.choice(viable_parents)
             )
             child.mutate()
