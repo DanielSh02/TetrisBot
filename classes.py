@@ -95,6 +95,7 @@ class Tetris:
             self.board[square[0]][square[1]] = self.current_piece.color
         self.current_piece = self.next_piece
         self.next_piece = self.new_piece()
+        self.holes()
         self.clear_rows()
 
     def collides(self, piece, move=[0, 0]):
@@ -135,8 +136,6 @@ class Tetris:
         else:
             self.bag_index+=1
         return next(self.bag)
-        
-        
 
     def restart(self):
         self.board = [[None] * 24 for i in range(10)]

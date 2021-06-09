@@ -47,14 +47,13 @@ class Competitor:
         """
         best_score = -1
         best_move = None
-        for switch in range(2):
-            for rotation in range(4):
-                for horizontal in range(100): #TODO: figure out horizontal range
-                    move = (switch, rotation, horizontal)
-                    test_score = self.calc_score(move)
-                    if test_score>best_score:
-                        best_score = test_score
-                        best_move = move
+        for rotation in range(4):
+            for horizontal in range(100): # TODO: figure out horizontal range
+                move = (switch, rotation, horizontal)
+                test_score = self.calc_score(move)
+                if test_score>best_score:
+                    best_score = test_score
+                    best_move = move
         return best_move
 
     def mutate(self):
