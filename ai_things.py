@@ -2,6 +2,7 @@ import random
 from classes import Tetris
 from copy import deepcopy
 
+num_competitors = 100
 num_moves = 100
 num_weights = 3
 
@@ -95,15 +96,16 @@ class Generation:
     def __init__(self, parent_gen=None):
         self.competitors = []
         self.children = []
+        self.avg_score = 0
 
         # If there is a parent generation inherit the children
         if parent_gen:
             self.competitors = parent_gen.children
             self.gen_number = parent_gen.gen_number + 1
-        # First generation completely random 100 competitors
+        # First generation completely random num_comp competitors
         else:
-            names = iter(range(100))
-            for i in range(100):
+            names = iter(range(num_competitors))
+            for i in range(num_competitors):
                 name = next(names)
                 zeros = (3-len(str(name)))*'0'
                 self.competitors.append(Competitor(f'0.{zeros}{name}'))
@@ -115,23 +117,25 @@ class Generation:
         for competitor in self.competitors:
             print(competitor)
             competitor.play()
+        self.avg_score = sum([comp.overall_score() for comp in self.competitors])/num_competitors
+        print(f'Generation {self.gen_number} had an Average Score of {self.avg_score}')
         self.breed()
 
     def breed(self):
         print('Breeding...\n\n')
-        names = iter(range(100))
+        names = iter(range(num_competitors))
         # natural selection (Keep top 50%)
         viable_parents = sorted(
             self.competitors, key=lambda x: x.overall_score(), reverse=True
         )[: len(self.competitors) // 2]
-        for i in range(85):
+        for i in range(int(num_competitors*0.85)):
             name = next(names)
             zeros = (3-len(str(name)))*'0'
             self.children.append(
                 Competitor(f'{self.gen_number+1}.{zeros}{name}',random.choice(viable_parents), random.choice(viable_parents))
             )
         # mutate some of the children
-        for i in range(15):
+        for i in range(num_competitors - int(num_competitors*0.85) ):
             name = next(names)
             zeros = (3-len(str(name)))*'0'
             child = Competitor(f'{self.gen_number+1}.{zeros}{name}',
