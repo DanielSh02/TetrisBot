@@ -83,7 +83,7 @@ class Competitor:
                 weight = random.uniform(0, 1)
 
     def __str__(self):
-        return f"Holes: {self.weights[0]}, Height difference: {self.weights[1]}, Line clearing: {self.weights[2]}"
+        return f"Competitor: {self.name}\nHoles: {self.weights[0]}, Height difference: {self.weights[1]}, Line clearing: {self.weights[2]}"
 
 
 class Generation:
@@ -105,17 +105,17 @@ class Generation:
             names = iter(range(100))
             self.competitors = [Competitor(f'0.{next(names)}') for i in range(100)]
             self.gen_number = 0
-        print(f'Generation {self.gen_number} created!')
+        print(f'Generation {self.gen_number} created!\n')
 
     def train(self):
-        print('Training...')
+        print('Training...\n')
         for competitor in self.competitors:
             print(competitor)
             competitor.play()
         self.breed()
 
     def breed(self):
-        print('Breeding...')
+        print('Breeding...\n\n')
         names = iter(range(100))
         # natural selection (Keep top 50%)
         viable_parents = sorted(
@@ -141,4 +141,3 @@ class Generation:
 # Difference in height (greater is worse) (might be similar to height)
 
 # Split path, next piece vs current piece
-print(list(range(-5,5)))
