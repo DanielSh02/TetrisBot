@@ -122,7 +122,7 @@ class Generation:
         names = iter(range(100))
         # natural selection (Keep top 50%)
         viable_parents = sorted(
-            self.competitors, key=lambda x: x.overall_superscore(), reverse=True
+            self.competitors, key=lambda x: x.overall_score(), reverse=True
         )[: len(self.competitors) // 2]
         for i in range(85):
             name = next(names)
