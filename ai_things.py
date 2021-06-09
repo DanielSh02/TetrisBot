@@ -3,10 +3,14 @@ from classes import Tetris
 from copy import deepcopy
 from numpy import average
 
-num_competitors = 20
-num_moves = 500
+
+normal_amount = 100
+mutated_amount = 10
+invasive_amount = 10
+num_competitors = normal_amount+mutated_amount+invasive_amount
+num_moves = 200
 num_weights = 3
-mutation_rate = 0.9
+
 
 class bot:
     def __init__(self, weights):
@@ -40,8 +44,8 @@ class Competitor:
                 print(f"Competitor {self.name} died prematurely")
                 break
             best_move = self.optimal_move()
-            if move % 50 == 0:
-                print(f"Turn: {move}, {best_move}")
+            # if move % 50 == 0:
+                # print(f"Turn: {move}, {best_move}")
             self.gamestate.make_move(best_move)
         self.super_score = self.gamestate.score*0.2 if not self.gamestate.alive else self.gamestate.score
         print(f"Score: {self.super_score}\n\n")
@@ -136,11 +140,11 @@ class Generation:
     def breed(self):
         print("Breeding...\n\n")
         names = iter(range(num_competitors))
-        # natural selection (Keep top 50%)
+        # natural selection (Keep top 25%)
         viable_parents = sorted(
             self.competitors, key=lambda x: x.super_score, reverse=True
-        )[: len(self.competitors) // 2]
-        for i in range(int(num_competitors * (1-mutation_rate))):
+        )[: len(self.competitors) // 4]
+        for i in range(normal_amount):
             name = next(names)
             zeros = (3 - len(str(name))) * "0"
             self.children.append(
@@ -151,7 +155,7 @@ class Generation:
                 )
             )
         # mutate some of the children
-        for i in range(num_competitors - int(num_competitors * (1-mutation_rate))):
+        for i in range(mutated_amount):
             name = next(names)
             zeros = (3 - len(str(name))) * "0"
             child = Competitor(
@@ -162,6 +166,14 @@ class Generation:
             child.mutate()
             self.children.append(child)
 
+        #Invasive
+        for i in range(invasive_amount):
+            name = next(names)
+            zeros = (3 - len(str(name))) * "0"
+            child = Competitor(f"{self.gen_number+1}.{zeros}{name}")     
+            self.children.append(child)
+        
+
 
 # Bumpiness of the board (more bumpy probably worse?? might depend on the piece)
 
@@ -170,3 +182,7 @@ class Generation:
 # Difference in height (greater is worse) (might be similar to height)
 
 # Split path, next piece vs current piece
+
+#look into future(consider upcoming piece)
+
+#homogeneity of a generation, invasive species?
