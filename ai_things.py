@@ -14,6 +14,7 @@ class bot:
 class Competitor:
     def __init__(self, parent1=None, parent2=None):
         self.weights = []
+        self.turns_alive = 0
         # First generation
         if not parent1 and not parent2:
             self.weights = [random.uniform(0, 1) for i in range(num_weights)]
@@ -32,11 +33,20 @@ class Competitor:
         Will play num_moves amount of moves or until death
         """
         for move in range(num_moves):
+            if not self.gamestate.alive:
+                break
             if move%10==0:
                 best_move = self.optimal_move()
                 print(f'Turn: {move}, {best_move}')
             self.gamestate.make_move(best_move)
-        print(f'Score: {self.gamestate.score}')
+            self.turns_alive += 1
+        print(f'Score: {self.superscore()}')
+
+    def overall_score(self):
+        super_score = 0
+        if not self.gamestate.alive:
+            super_score-=1000
+        return super_score+self.gamestate.score+self.turns_alive
 
     def calc_score(self, move):
         """
@@ -104,7 +114,7 @@ class Generation:
         print('Breeding...')
         # natural selection (Keep top 50%)
         viable_parents = sorted(
-            self.competitors, key=lambda x: x.gamestate.score, reverse=True
+            self.competitors, key=lambda x: x.overall_superscore(), reverse=True
         )[: len(self.competitors) // 2]
         for i in range(85):
             self.children.append(

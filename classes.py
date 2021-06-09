@@ -55,6 +55,7 @@ class Tetris:
         self.clear_q = []
         self.row_score = 0
         self.height_diff = None
+        self.alive = True
         # print('Current Piece' + str(self.current_piece))
         # print('Next piece' + str(self.next_piece))
 
@@ -96,8 +97,6 @@ class Tetris:
     def freeze(self):
         for square in self.current_piece.squares:
             self.board[square[0]][square[1]] = self.current_piece.color
-        self.current_piece = self.next_piece
-        self.next_piece = self.new_piece()
         self.super_update()
         self.clear_rows()
 
@@ -163,6 +162,8 @@ class Tetris:
         self.drop()
 
     def super_update(self):
+        self.current_piece = self.next_piece
+        self.next_piece = self.new_piece()
         full_rows = []
         for i in range(24):
             counter = 0
