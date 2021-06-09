@@ -40,7 +40,7 @@ class Competitor:
                 print(f"Competitor {self.name} died prematurely")
                 break
             best_move = self.optimal_move()
-            if move % 100 == 0:
+            if move % 50 == 0:
                 print(f"Turn: {move}, {best_move}")
             self.gamestate.make_move(best_move)
         self.super_score = self.gamestate.score*0.2 if not self.gamestate.alive else self.gamestate.score
