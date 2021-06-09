@@ -129,6 +129,8 @@ class Generation:
             print(
                 f"Generation {self.gen_number}\nStats: {self.stats}\nGrowth: {growth}"
             )
+        else:
+            print(f"Generation {self.gen_number}\nStats: {self.stats}")
         self.breed()
 
     def breed(self):
