@@ -12,9 +12,10 @@ def generate_bot(desired_score):
         current_gen.train()
         #update current gen to be the kids
         current_gen = Generation(current_gen)
+    print('Success')
     file = open(f"species/species_{species_num}.pickle", "wb")
     pickle.dump(current_gen, file)
     file.close()
 
 for i in range(10):
-    generate_bot(1200)
+    generate_bot(100000)

@@ -32,7 +32,10 @@ class Competitor:
         Will play num_moves amount of moves or until death
         """
         for move in range(num_moves):
-            self.gamestate.make_move(self.optimal_move())
+            if move%10==0:
+                best_move = self.optimal_move()
+                print(f'Turn: {move}, {best_move}')
+            self.gamestate.make_move(best_move)
 
     def calc_score(self, move):
         """
@@ -41,9 +44,9 @@ class Competitor:
         test_board = deepcopy(self.gamestate)
         test_board.make_move(move)
         score = 0
-        score += self.weights[0] * test_board.holes
-        score += self.weights[2] * test_board.height_diff
-        score += self.weights[3] * test_board.clear_score
+        score -= self.weights[0] * test_board.holes #more holes worse
+        score -= self.weights[1] * test_board.height_diff #more height diff worse
+        score += self.weights[2] * test_board.row_score #more row_score better
         return score
 
     def optimal_move(self):
@@ -53,7 +56,7 @@ class Competitor:
         best_score = -1
         best_move = None
         for rotation in range(4):
-            for horizontal in range(100):  # TODO: figure out horizontal range
+            for horizontal in range(-5,6):  # TODO: figure out horizontal range
                 move = (rotation, horizontal)
                 test_score = self.calc_score(move)
                 if test_score > best_score:
@@ -88,13 +91,16 @@ class Generation:
         else:
             self.competitors = [Competitor() for i in range(100)]
             self.gen_number = 0
+        print(f'Generation {self.gen_number} created!')
 
     def train(self):
+        print('Training...')
         for competitor in self.competitors:
             competitor.play()
         self.breed()
 
     def breed(self):
+        print('Breeding...')
         # natural selection (Keep top 50%)
         viable_parents = sorted(
             self.competitors, key=lambda x: x.gamestate.score, reverse=True

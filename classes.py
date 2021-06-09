@@ -53,7 +53,7 @@ class Tetris:
         self.next_piece = self.new_piece()
         self.holes = None
         self.clear_q = []
-        self.clear_score
+        self.row_score = 0
         self.height_diff = None
         # print('Current Piece' + str(self.current_piece))
         # print('Next piece' + str(self.next_piece))
@@ -91,7 +91,6 @@ class Tetris:
                 break
             test_piece.move([0, -1])
         self.current_piece.move([0, -distance])
-        self.update_clear_q()
         self.freeze()
 
     def freeze(self):
@@ -122,7 +121,6 @@ class Tetris:
                 column.append(None)
             counter += 1
     
-
     def new_piece(self):
         if self.bag_index == 0:
             x = [Piece(type) for type in piece_types]
@@ -160,7 +158,7 @@ class Tetris:
             direction = np.sign(move[1])
             moves = abs(move[1])
             for i in range(moves):
-                self.side(self, [direction, 0])
+                self.side([direction, 0])
         self.drop()
 
     def super_update(self):
@@ -173,8 +171,8 @@ class Tetris:
             if counter == 10:
                 full_rows.append(i)
         self.clear_q = full_rows
-        self.clear_score = self.clear_scoring(len(self.clear_q))
-        self.score += self.clear_score
+        self.row_score = self.clear_scoring(len(self.clear_q))
+        self.score += self.row_score
         self.holes = sum(len(list([1 for i in range(10) if self.board[i][j+1] and not self.board[i][j]])) for j in range(20))
         self.height_diff = stdev([24-better_index(list(map(lambda x:bool(x),reversed(col)))) for col in self.board])
 
