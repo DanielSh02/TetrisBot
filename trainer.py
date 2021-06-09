@@ -2,7 +2,6 @@ from ai_things import Generation
 import pickle
 import glob
 
-
 def generate_bot(desired_score):
     species_num = len(glob.glob("species/*"))
     current_gen = Generation()
@@ -16,6 +15,7 @@ def generate_bot(desired_score):
     file = open(f"species/species_{species_num}.pickle", "wb")
     pickle.dump(current_gen, file)
     file.close()
+
 
 for i in range(10):
     generate_bot(100000)

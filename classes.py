@@ -95,8 +95,11 @@ class Tetris:
         self.freeze()
 
     def freeze(self):
-        for square in self.current_piece.squares:
-            self.board[square[0]][square[1]] = self.current_piece.color
+        try:
+            for square in self.current_piece.squares:
+                self.board[square[0]][square[1]] = self.current_piece.color
+        except:
+            self.alive = False
         self.super_update()
         self.clear_rows()
 
@@ -106,8 +109,11 @@ class Tetris:
         for coord in test_piece.squares:
             if coord[1] < 0 or coord[0] < 0 or coord[0] >= 10:
                 return True
-            if self.board[coord[0]][coord[1]] is not None:
-                return True
+            try:
+                if self.board[coord[0]][coord[1]] is not None:
+                    return True
+            except:
+                return False
         return False
 
 

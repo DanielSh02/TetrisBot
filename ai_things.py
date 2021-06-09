@@ -35,12 +35,12 @@ class Competitor:
         for move in range(num_moves):
             if not self.gamestate.alive:
                 break
+            best_move = self.optimal_move()
             if move%10==0:
-                best_move = self.optimal_move()
                 print(f'Turn: {move}, {best_move}')
             self.gamestate.make_move(best_move)
             self.turns_alive += 1
-        print(f'Score: {self.overall_score()}')
+        print(f'Score: {self.overall_score()}\n\n')
 
     def overall_score(self):
         super_score = 0
@@ -81,7 +81,7 @@ class Competitor:
                 weight = random.uniform(0, 1)
 
     def __str__(self):
-        return f"Weights - Holes: {self.weights[0]}, Height difference: {self.weights[1]}, Line clearing: {self.weights[2]}"
+        return f"Holes: {self.weights[0]}, Height difference: {self.weights[1]}, Line clearing: {self.weights[2]}"
 
 
 class Generation:
@@ -107,6 +107,7 @@ class Generation:
     def train(self):
         print('Training...')
         for competitor in self.competitors:
+            print(competitor)
             competitor.play()
         self.breed()
 
