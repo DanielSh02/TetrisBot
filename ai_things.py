@@ -1,11 +1,12 @@
 import random
 from classes import Tetris
 from copy import deepcopy
+from numpy import average
 
-num_competitors = 10
-num_moves = 100
+num_competitors = 20
+num_moves = 500
 num_weights = 3
-
+mutation_rate = 0.9
 
 class bot:
     def __init__(self, weights):
@@ -16,7 +17,7 @@ class Competitor:
     def __init__(self, name, parent1=None, parent2=None):
         self.name = name
         self.weights = []
-        self.turns_alive = 0
+        self.super_score = 0
         # First generation
         if not parent1 and not parent2:
             self.weights = [random.uniform(0, 1) for i in range(num_weights)]
@@ -36,20 +37,16 @@ class Competitor:
         """
         for move in range(num_moves):
             if not self.gamestate.alive:
-                print(f'Competitor {self.name} died prematurely')
+                print(f"Competitor {self.name} died prematurely")
                 break
             best_move = self.optimal_move()
-            if move%10==0:
-                print(f'Turn: {move}, {best_move}')
+            if move % 100 == 0:
+                print(f"Turn: {move}, {best_move}")
             self.gamestate.make_move(best_move)
-            self.turns_alive += 1
-        print(f'Score: {self.overall_score()}\n\n')
+        self.super_score = self.gamestate.score*0.2 if not self.gamestate.alive else self.gamestate.score
+        print(f"Score: {self.super_score}\n\n")
 
-    def overall_score(self):
-        super_score = 0
-        if not self.gamestate.alive:
-            super_score-=1000
-        return super_score+self.gamestate.score+self.turns_alive
+        
 
     def calc_score(self, move):
         """
@@ -58,19 +55,19 @@ class Competitor:
         test_board = deepcopy(self.gamestate)
         test_board.make_move(move)
         score = 0
-        score -= self.weights[0] * test_board.holes #more holes worse
-        score -= self.weights[1] * test_board.height_diff #more height diff worse
-        score += self.weights[2] * test_board.row_score #more row_score better
+        score -= self.weights[0] * test_board.holes  # more holes worse
+        score -= self.weights[1] * test_board.height_diff  # more height diff worse
+        score += self.weights[2] * test_board.row_score  # more row_score better
         return score
 
     def optimal_move(self):
         """
         Returns move of form (rotation, side) optimised based off weights (calling calc_score)
         """
-        best_score = float('-inf')
+        best_score = float("-inf")
         best_move = None
         for rotation in range(4):
-            for horizontal in range(-5,5):  # TODO: figure out horizontal range
+            for horizontal in range(-5, 5):  # TODO: figure out horizontal range
                 move = (rotation, horizontal)
                 test_score = self.calc_score(move)
                 if test_score > best_score:
@@ -85,7 +82,8 @@ class Competitor:
 
     def __str__(self):
         return f"Competitor: {self.name}\nHoles: {self.weights[0]}, Height difference: {self.weights[1]}, Line clearing: {self.weights[2]}"
-
+    def __repr__(self):
+        return f"Competitor: {self.name}\nHoles: {self.weights[0]}, Height difference: {self.weights[1]}, Line clearing: {self.weights[2]}\n\n"
 
 class Generation:
     """
@@ -94,9 +92,11 @@ class Generation:
     """
 
     def __init__(self, parent_gen=None):
+        self.parent_gen = parent_gen
         self.competitors = []
         self.children = []
         self.stats = {}
+        self.comparison = {}
         # If there is a parent generation inherit the children
         if parent_gen:
             self.competitors = parent_gen.children
@@ -106,42 +106,56 @@ class Generation:
             names = iter(range(num_competitors))
             for i in range(num_competitors):
                 name = next(names)
-                zeros = (3-len(str(name)))*'0'
-                self.competitors.append(Competitor(f'0.{zeros}{name}'))
+                zeros = (3 - len(str(name))) * "0"
+                self.competitors.append(Competitor(f"0.{zeros}{name}"))
             self.gen_number = 0
-        print(f'Generation {self.gen_number} created!\n')
+        print(f"Generation {self.gen_number} created!\n")
 
     def train(self):
-        print('Training...\n')
+        print("Training...\n")
         for competitor in self.competitors:
             print(competitor)
             competitor.play()
-        scores = [comp.overall_score() for comp in self.competitors]
-        self.stats['avg'] = sum(scores)/num_competitors
-        self.stats['max'] = max(scores)
-        self.stats['min'] = min(scores)
-        print(f'Generation {self.gen_number} had: {self.stats}')
+        scores = [comp.super_score for comp in self.competitors]
+        self.stats["avg"] = average(scores)
+        self.stats["max"] = max(scores)
+        self.stats["min"] = min(scores)
+        if self.parent_gen:
+            growth = {
+                "avg": self.stats["avg"] - self.parent_gen.stats["avg"],
+                "max": self.stats["max"] - self.parent_gen.stats["max"],
+                "min": self.stats["min"] - self.parent_gen.stats["min"],
+            }
+            print(
+                f"Generation {self.gen_number}\nStats: {self.stats}\nGrowth: {growth}"
+            )
         self.breed()
 
     def breed(self):
-        print('Breeding...\n\n')
+        print("Breeding...\n\n")
         names = iter(range(num_competitors))
         # natural selection (Keep top 50%)
         viable_parents = sorted(
-            self.competitors, key=lambda x: x.overall_score(), reverse=True
+            self.competitors, key=lambda x: x.super_score, reverse=True
         )[: len(self.competitors) // 2]
-        for i in range(int(num_competitors*0.85)):
+        for i in range(int(num_competitors * (1-mutation_rate))):
             name = next(names)
-            zeros = (3-len(str(name)))*'0'
+            zeros = (3 - len(str(name))) * "0"
             self.children.append(
-                Competitor(f'{self.gen_number+1}.{zeros}{name}',random.choice(viable_parents), random.choice(viable_parents))
+                Competitor(
+                    f"{self.gen_number+1}.{zeros}{name}",
+                    random.choice(viable_parents),
+                    random.choice(viable_parents),
+                )
             )
         # mutate some of the children
-        for i in range(num_competitors - int(num_competitors*0.85) ):
+        for i in range(num_competitors - int(num_competitors * (1-mutation_rate))):
             name = next(names)
-            zeros = (3-len(str(name)))*'0'
-            child = Competitor(f'{self.gen_number+1}.{zeros}{name}',
-                random.choice(viable_parents), random.choice(viable_parents)
+            zeros = (3 - len(str(name))) * "0"
+            child = Competitor(
+                f"{self.gen_number+1}.{zeros}{name}",
+                random.choice(viable_parents),
+                random.choice(viable_parents),
             )
             child.mutate()
             self.children.append(child)
