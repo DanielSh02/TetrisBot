@@ -97,7 +97,7 @@ class Tetris:
             self.board[square[0]][square[1]] = self.current_piece.color
         self.current_piece = self.next_piece
         self.next_piece = self.new_piece()
-        self.holes()
+        print(self.height_diff())
         self.clear_rows()
 
     def collides(self, piece, move=[0, 0]):
@@ -172,17 +172,7 @@ class Tetris:
         return sum(len(list([1 for i in range(10) if self.board[i][j+1] and not self.board[i][j]])) for j in range(20))
 
     def height_diff(self):
-        heights = []
-        # avg = sum(heights)/len(heights) dividing kinda do?esnt matter right
-        # io feel lik etheres prob just a std ok sure
-        # u want the average don't u for standard dev
-        # probably, but whats the differecne from what we can do
-        for col in self.board:
-            height = 0
-            for i in range(len(heights)):
-                if col[i] is not None:
-                    height = 0
-            heights.append(height)
+        return stdev(len(col)-[1 for point in reversed(col) if point].index(1) for col in self.board)
 
 
 class Piece:
