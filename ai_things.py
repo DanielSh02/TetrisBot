@@ -13,6 +13,7 @@ class bot:
 
 class Competitor:
     def __init__(self, name, parent1=None, parent2=None):
+        self.name = name
         self.weights = []
         self.turns_alive = 0
         # First generation
@@ -34,6 +35,7 @@ class Competitor:
         """
         for move in range(num_moves):
             if not self.gamestate.alive:
+                print(f'Competitor {self.name} died prematurely')
                 break
             best_move = self.optimal_move()
             if move%10==0:
@@ -121,11 +123,11 @@ class Generation:
         )[: len(self.competitors) // 2]
         for i in range(85):
             self.children.append(
-                Competitor(f'{self.gen_number}.next(name)',random.choice(viable_parents), random.choice(viable_parents))
+                Competitor(f'{self.gen_number+1}.{next(names)}',random.choice(viable_parents), random.choice(viable_parents))
             )
         # mutate some of the children
         for i in range(15):
-            child = Competitor(f'{self.gen_number}.next(name)',
+            child = Competitor(f'{self.gen_number+1}.{next(names)}',
                 random.choice(viable_parents), random.choice(viable_parents)
             )
             child.mutate()
