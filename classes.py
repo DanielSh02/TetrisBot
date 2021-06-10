@@ -101,7 +101,7 @@ class Tetris:
         except:
             self.alive = False
         self.super_update()
-        self.clear_rows()
+        
 
     def collides(self, piece, move=[0, 0]):
         test_piece = deepcopy(piece)
@@ -125,7 +125,6 @@ class Tetris:
             for column in self.board:
                 column.pop(i - counter)
                 column.append(None)
-            counter += 1
     
     def new_piece(self):
         if self.bag_index == 0:
@@ -168,8 +167,11 @@ class Tetris:
         self.drop()
 
     def super_update(self):
+        # Update pieces
         self.current_piece = self.next_piece
         self.next_piece = self.new_piece()
+
+        # Get row scores and clear rows
         full_rows = []
         for i in range(24):
             counter = 0
@@ -181,9 +183,22 @@ class Tetris:
         self.clear_q = full_rows
         self.row_score = self.clear_scoring(len(self.clear_q))
         self.score += self.row_score
-        self.holes = sum(len(list([1 for i in range(10) if self.board[i][j+1] and not self.board[i][j]])) for j in range(20))
-        self.height_diff = stdev([24-better_index(list(map(lambda x:bool(x),reversed(col)))) for col in self.board])
+        self.clear_rows()
 
+        # Get holes/heights scores
+        self.holes = 0
+        heights = []
+        for col in self.board:
+            i=23
+            flag = False
+            while i>=0:
+                if not flag and col[i]:
+                    heights.append(i)
+                    flag = True
+                elif not col[i]:
+                    self.holes += 1
+                i-=1
+        self.height_diff = stdev(heights)
 
 
 def better_index(lst):

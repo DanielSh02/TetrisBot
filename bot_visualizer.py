@@ -5,7 +5,8 @@ from pyglet import shapes
 from pyglet.window import key
 
 bot = Competitor('epicstyle')
-bot.weights = [0.4397317180301542, 0.28839572890950493, 0.00925338110727092]
+bot.weights = [0.9717395125694195, 0.018721400922463882, 0.00925338110727092]
+
 # Holes: 0.3023643717256892, Height difference: 0.04609843452110984, Line clearing: 0.0971269257666385
 gamestate = bot.gamestate
 
@@ -31,6 +32,7 @@ def update(dt):
         gamestate.down()
         best_move = bot.optimal_move()
         bot.gamestate.make_move(best_move)
+        print(bot.gamestate.holes)
 
 
 @game_window.event

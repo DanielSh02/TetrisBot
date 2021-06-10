@@ -186,3 +186,7 @@ class Generation:
 #look into future(consider upcoming piece)
 
 #homogeneity of a generation, invasive species?
+
+#Making long holes things is bad if its not for tetris set up
+
+#Tetris potential
