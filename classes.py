@@ -190,14 +190,17 @@ class Tetris:
         heights = []
         for col in self.board:
             i=23
+            #checks if below highest block
             flag = False
             while i>=0:
                 if not flag and col[i]:
                     heights.append(i)
                     flag = True
-                elif not col[i]:
+                elif flag and not col[i]:
                     self.holes += 1
                 i-=1
+            if not flag:
+                heights.append(0)
         self.height_diff = stdev(heights)
 
 
