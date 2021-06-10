@@ -193,14 +193,18 @@ class Tetris:
             #checks if below highest block
             flag = False
             while i>=0:
+                # Finds highest block
                 if not flag and col[i]:
-                    heights.append(i)
+                    heights.append(i+1)
                     flag = True
+                # If below highest block
                 elif flag and not col[i]:
                     self.holes += 1
                 i-=1
+            #If no highest block was found (0 height)
             if not flag:
                 heights.append(0)
+        print(heights)
         self.height_diff = stdev(heights)
 
 

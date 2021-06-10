@@ -20,4 +20,4 @@ def generate_bot(desired_score):
     file.close()
 
 
-generate_bot(7000)
+generate_bot(10000)
