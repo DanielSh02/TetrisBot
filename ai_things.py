@@ -52,28 +52,40 @@ class Competitor:
 
         
 
-    def calc_score(self, move):
+    def calc_score(self, test_board):
         """
         How much does the move score based off the competitors weights?
         """
-        test_board = deepcopy(self.gamestate)
-        test_board.make_move(move)
         score = 0
         score -= self.weights[0] * test_board.holes  # more holes worse
         score -= self.weights[1] * test_board.height_diff  # more height diff worse
         score += self.weights[2] * test_board.row_score  # more row_score better
         return score
 
-    def optimal_move(self):
+    def deeper_optimal_score(self, deeper_board):
         """
         Returns move of form (rotation, side) optimised based off weights (calling calc_score)
         """
+        best_score = float("-inf")
+        for rotation in range(4):
+            for horizontal in range(-5, 5):  # TODO: figure out horizontal range
+                move = (rotation, horizontal)
+                test_board = deepcopy(deeper_board)
+                test_board.make_move(move)
+                test_score = self.calc_score(test_board)
+                if test_score > best_score:
+                    best_score = test_score
+        return best_score
+
+    def optimal_move(self):
         best_score = float("-inf")
         best_move = None
         for rotation in range(4):
             for horizontal in range(-5, 5):  # TODO: figure out horizontal range
                 move = (rotation, horizontal)
-                test_score = self.calc_score(move)
+                test_board = deepcopy(self.gamestate)
+                test_board.make_move(move)
+                test_score = self.calc_score(test_board)+self.deeper_optimal_score(test_board)
                 if test_score > best_score:
                     best_score = test_score
                     best_move = move

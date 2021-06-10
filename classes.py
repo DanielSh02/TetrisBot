@@ -204,15 +204,9 @@ class Tetris:
             #If no highest block was found (0 height)
             if not flag:
                 heights.append(0)
-        print(heights)
         self.height_diff = stdev(heights)
 
 
-def better_index(lst):
-    try:
-        return lst.index(True)
-    except:
-        return 24
 
 class Piece:
     def __init__(self, type, column=4, row=20):
